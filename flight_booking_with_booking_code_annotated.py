@@ -1,3 +1,4 @@
+
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
@@ -5,9 +6,6 @@ Created on Fri Mar 28 14:19:27 2025
 
 @author: haojiacheng
 """
-
-
-
 
 # Import required libraries for generating random booking codes
 import random
@@ -38,7 +36,7 @@ passenger_records = {}
 # Set to track used booking codes and ensure uniqueness
 existing_codes = set()
 
-
+# Function to generate a unique 8-character booking code
 # Function to generate a unique 8-character booking code
 def generate_booking_code():
     while True:
@@ -165,5 +163,3 @@ Apache Airlines Booking System
 
 # Entry point of the program
 main()
-
-
