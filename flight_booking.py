@@ -1,3 +1,4 @@
+
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
@@ -6,12 +7,14 @@ Created on Fri Mar 28 14:19:27 2025
 @author: haojiacheng
 """
 
-
-
-
 # Import required libraries for generating random booking codes
 import random
 import string
+
+import sqlite3  # For database operations
+conn = sqlite3.connect('booking_database.db')
+cursor = conn.cursor()
+
 
 # Apache Airlines Seat Booking System (Extended Version with Booking Code)
 # Each seat can have values:
@@ -97,6 +100,13 @@ def book_seat():
             # Generate a booking code and store it
             booking_code = generate_booking_code()
             seat_map[row][col] = booking_code
+            passport_number = input("Enter passport number: ")
+            # Store booking in the database
+            cursor.execute('''
+                INSERT INTO bookings (booking_code, passenger_name, passport_number, row, col)
+                VALUES (?, ?, ?, ?, ?)
+            ''', (booking_code, passenger_name, passport_number, row, col))
+            conn.commit()
 # Dictionary to store seat bookings with (row, col) as key
             passenger_records[(row, col)] = (passenger_name, booking_code)
             print(f"Seat booked successfully. Booking code: {booking_code}")
@@ -118,6 +128,9 @@ def free_seat():
             passenger_records.pop((row, col), None)
 # Set to track used booking codes and ensure uniqueness
             existing_codes.discard(code)
+            # Delete booking from database
+            cursor.execute("DELETE FROM bookings WHERE booking_code = ?", (code,))
+            conn.commit()
             print(f"Booking {code} cancelled.")
         else:
             print("⚠️ This seat is not currently booked.")
@@ -136,16 +149,20 @@ def search_by_name():
 
 # Main program loop to interact with the user via menu
 def main():
+    
+    
+# Close the database connection after program ends
+    conn.close()
     while True:
         print("""
-Apache Airlines Booking System
-1. Check availability of seat
-2. Book a seat
-3. Free a seat
-4. Show booking status
-5. Search by passenger name
-6. Exit program
-""")
+    Apache Airlines Booking System
+    1. Check availability of seat
+    2. Book a seat
+    3. Free a seat
+    4. Show booking status
+    5. Search by passenger name
+    6. Exit program
+    """)
         choice = input("Enter your choice (1-6): ")
         if choice == "1":
             check_availability()
@@ -162,8 +179,9 @@ Apache Airlines Booking System
             break
         else:
             print("Invalid choice. Try again.")
-
-# Entry point of the program
-main()
-
-
+            
+if __name__ == '__main__':
+    main()
+    
+# Close the database connection after program ends
+conn.close()
